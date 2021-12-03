@@ -9,8 +9,10 @@ import os
 
 root = Tk()
 root.title('Face detection app')
-root.tk.call('wm', 'iconphoto', root._w, PhotoImage(file='Face Detection App/face-id.png'))
-root.geometry("700x400")
+root.tk.call('wm', 'iconphoto', root._w, PhotoImage(file='FacialRecognition/face-id.png'))
+#root.geometry("700x400")
+root.attributes("-fullscreen", True)
+root.bind('<Escape>', lambda event: root.state('normal'))
 
 #functions
 def home():
@@ -103,7 +105,7 @@ def settings():
 
 #BG labels
 labelLeft = Label(root, text="", bg="#6963ff", height= 60, width=25)
-image = Image.open('Face Detection App/logo-main.png')
+image = Image.open('FacialRecognition/logo-main.png')
 my_img = ImageTk.PhotoImage(image)
 my_label = Label(image= my_img, bg='white', height=100, width=100)
 my_label.place(anchor=CENTER, relx=0.14, rely=0.2)
