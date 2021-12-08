@@ -4,17 +4,24 @@ from tkinter import messagebox
 import matplotlib.pyplot as plt
 import tkinter.font as tkfont
 import cv2
+from time import sleep
 import random
 import os
+from imutils.video import WebcamVideoStream
+from imutils.video import FPS
+import argparse
+import imutils
+from threading import Thread
+import csv_add_details
+import face_training
 
 root = Tk()
 root.title('Face detection app')
-root.tk.call('wm', 'iconphoto', root._w, PhotoImage(file='FacialRecognition/face-id.png'))
-#root.geometry("700x400")
+root.tk.call('wm', 'iconphoto', root._w, PhotoImage(file='face-id.png'))
 root.attributes("-fullscreen", True)
 root.bind('<Escape>', lambda event: root.state('normal'))
 
-#functions
+#tab functions
 def home():
     #Button color change
     global homeButton, enrollNewButton, editDatabaseButton, settingsButton
@@ -38,7 +45,7 @@ def home():
     topLabelText.place(anchor=W, relheight=0.1, relwidth=0.2, relx=0.31, rely=0.1)
     boxLabel.place(anchor=W, relheight=0.75, relwidth=0.46, relx=0.295, rely=0.6)
     NameLabel.place(anchor=W, relheight=0.1, relwidth=0.2, relx=0.77, rely=0.26)
-    NameEntry.place(anchor=W, relheight=0.1, relwidth=0.2, relx=0.77, rely=0.37)
+    NameEntry.place(anchor=W, relheight=0.1, relwidth=0.25, relx=0.77, rely=0.37)
     StartButton.place(anchor=W, relheight=0.1, relwidth=0.215, relx=0.77, rely=0.92)
 
 def enrollNew():
@@ -51,13 +58,19 @@ def enrollNew():
     
     #font details
     bold_font = tkfont.Font(family="Helvetica", size=12, weight="bold")
+    normal_font = tkfont.Font(family="Helvetica", size=12, slant='italic')
     # labels
     bgTopLabel = Label(root, text="", bg='#dae8fc', font=bold_font, height=3, width=44, borderwidth=1, relief="solid")
     topLabelText = Label(root, text="Enroll New", bg='#dae8fc', fg = "black", font=bold_font,justify=LEFT, height=2, width=10)
     boxLabel = Label(root, text="", bg='#dae8fc',font=bold_font, height=15, width=30)
     NameLabel = Label(root, text="Name", font=bold_font,justify=CENTER, height=1, width=10)
+    global NameEntry
     NameEntry = Entry(root, borderwidth=1, bg = "#dae8fc", fg= "black", font=bold_font, width=17)
-    StartButton = Button(root, text='Start', bg='white', fg='black', font=bold_font, height=1, width=10)
+    msgTitleLabel = Label(root, text="Message box",anchor=CENTER, font=bold_font, height=1, width=8)
+    global msgLabel
+    msgLabel = Label(root, text=' Enter name and click start', font=normal_font, anchor=NW, height=1, width=8, borderwidth=1, relief=SUNKEN)
+    global StartButton
+    StartButton = Button(root, text='Start', bg='white', fg='black', font=bold_font, height=1, width=10, command=TenrollNewStart)
 
     #place labels
     bgTopLabel.place(anchor=W, relheight=0.15, relwidth=0.686, relx=0.295, rely=0.1)
@@ -65,6 +78,8 @@ def enrollNew():
     boxLabel.place(anchor=W, relheight=0.75, relwidth=0.46, relx=0.295, rely=0.6)
     NameLabel.place(anchor=W, relheight=0.1, relwidth=0.215, relx=0.77, rely=0.26)
     NameEntry.place(anchor=W, relheight=0.1, relwidth=0.215, relx=0.77, rely=0.37)
+    msgTitleLabel.place(anchor=W, relheight=0.1, relwidth=0.2, relx= 0.77, rely=0.5)
+    msgLabel.place(anchor=W, relheight=0.1, relwidth=0.2, relx=0.77, rely=0.6)
     StartButton.place(anchor=W, relheight=0.1, relwidth=0.215, relx=0.77, rely=0.92)
 
 def editDatabase():
@@ -103,9 +118,83 @@ def settings():
     
     #font details
 
+#functions
+def getName():
+    global NameEntry
+    global msgLabel
+    global StartButton
+    name = str(NameEntry.get())
+    enrollNewStart(name)
+
+def enrollNewStart(name):
+    print(name)
+    global id, homeButton, enrollNewButton, editDatabaseButton, settingsButton
+    id = int(csv_add_details.create(name))
+    msgLabel['text'] = "    Name got registered "
+    StartButton['state'] = DISABLED
+    homeButton['state'] = DISABLED
+    enrollNewButton['state'] = DISABLED
+    editDatabaseButton['state'] = DISABLED
+    settingsButton['state'] = DISABLED
+    sleep(1)
+    makeDataset()
+
+def makeDataset():
+    print("preparing dataset")
+    messagebox.showinfo("Attention", "Initializing face capture. Look at the camera and wait ...")
+    msgLabel['text'] = "    Preparing dataset"
+    global id
+    dataset(id, 1, 0)
+    messagebox.showinfo("Attention","Now turn your head 30 degrees left")
+    dataset(id, 2, 10)
+    messagebox.showinfo("Attention","Now turn your head 30 degrees right")
+    dataset(id, 3, 20)
+    face_training.trainStart()
+    msgLabel['text'] = "Your face details got saved\nand trained "
+    StartButton['state'] = NORMAL
+    homeButton['state'] = NORMAL
+    enrollNewButton['state'] = NORMAL
+    editDatabaseButton['state'] = NORMAL
+    settingsButton['state'] = NORMAL
+
+def dataset(face_id, part, count):
+    vs = WebcamVideoStream(src=0).start()
+    face_detector = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+    
+    while(True):
+
+        frame = vs.read()
+        frame = imutils.resize(frame, width=400)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        faces = face_detector.detectMultiScale(gray, 1.3, 5)
+
+        for (x,y,w,h) in faces: 
+
+            cv2.rectangle(frame, (x,y), (x+w,y+h), (255,0,0), 2)     
+            # Save the captured image into the datasets folder
+            count += 1
+            print(count)
+            cv2.imwrite("dataset/User." + str(face_id) + '.' + str(count) + ".jpg", gray[y:y+h,x:x+w])
+            cv2.imshow('camera', frame)
+
+        k = cv2.waitKey(100) & 0xff # Press 'ESC' for exiting video
+        if k == 27:
+            break
+        elif count == 10 and part == 1: # Take 10 face sample and stop video
+            break
+        elif count == 20 and part == 2:
+            break
+        elif count >= 30:
+            break
+
+    # Do a bit of cleanup
+    print("\n [INFO] Exiting Program and cleanup stuff")
+    cv2.destroyAllWindows()
+    vs.stop()
+
 #BG labels
 labelLeft = Label(root, text="", bg="#6963ff", height= 60, width=25)
-image = Image.open('FacialRecognition/logo-main.png')
+image = Image.open('logo-main.png')
 my_img = ImageTk.PhotoImage(image)
 my_label = Label(image= my_img, bg='white', height=100, width=100)
 my_label.place(anchor=CENTER, relx=0.14, rely=0.2)
