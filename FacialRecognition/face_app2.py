@@ -9,7 +9,6 @@ import random
 import os
 from imutils.video import WebcamVideoStream
 from imutils.video import FPS
-import argparse
 import imutils
 from threading import Thread
 import csv_add_details

@@ -1,14 +1,18 @@
 from tkinter import *
+from PIL import ImageTk, Image
 from tkinter import messagebox
-from tkinter import ttk
 import matplotlib.pyplot as plt
 import tkinter.font as tkfont
 import cv2
+from time import sleep
 import random
 import os
+from imutils.video import WebcamVideoStream
+from imutils.video import FPS
+import imutils
+from threading import Thread
 import csv_add_details
 import face_training
-from threading import Thread
 
 root = Tk()
 root.title('Face detection app')
@@ -50,13 +54,44 @@ def newStart(name):
 
 def makeDataset():
     print("preparing dataset")
+    messagebox.showinfo("Attention", "Initializing face capture. Look at the camera and wait ...")
     global id
-    #face_dataset.dataset(id)
-    t1 = Thread(target=dataset, args= (id, ))
-    t1.start()
-    t1.join()
+    dataset(id, 1, 0)
+    messagebox.showinfo("Attention","Now turn your head 30 degrees left")
+    dataset(id, 2, 10)
+    messagebox.showinfo("Attention","Now turn your head 30 degrees right")
+    dataset(id, 3, 20)
     face_training.trainStart()
-    messagebox.showinfo("Information","Your face details got saved and trained")
+
+def dataset(face_id, part, count):
+    vs = WebcamVideoStream(src=0).start()
+    face_detector = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+    
+    while(True):
+
+        frame = vs.read()
+        frame = imutils.resize(frame, width=400)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        faces = face_detector.detectMultiScale(gray, 1.3, 5)
+
+        for (x,y,w,h) in faces: 
+
+            cv2.rectangle(frame, (x,y), (x+w,y+h), (255,0,0), 2)     
+            # Save the captured image into the datasets folder
+            count += 1
+            print(count)
+            cv2.imwrite("dataset/User." + str(face_id) + '.' + str(count) + ".jpg", gray[y:y+h,x:x+w])
+            cv2.imshow('camera', frame)
+
+        k = cv2.waitKey(100) & 0xff # Press 'ESC' for exiting video
+        if k == 27:
+            break
+        elif count == 10 and part == 1: # Take 10 face sample and stop video
+            break
+        elif count == 20 and part == 2:
+            break
+        elif count >= 30:
+            break
 
 def update():
     newWindow = Toplevel(root)
@@ -75,47 +110,10 @@ def update():
     idE.place(x=90, y=80, height=28, width=80)
     idButton.place(x=45, y=160)
 
-def threading(face_id):
-    t1 = Thread(target=dataset, args= (face_id, ))
-    t1.start()
-
-def dataset(face_id):
-    cam = cv2.VideoCapture(0)
-    cam.set(3, 640) # set video width
-    cam.set(4, 480) # set video height
-
-    face_detector = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-
-    print("\n [INFO] Initializing face capture. Look the camera and wait ...")
-    # Initialize individual sampling face count
-    count = 0
-
-    while(True):
-
-        ret, img = cam.read()
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        faces = face_detector.detectMultiScale(gray, 1.3, 5)
-
-        for (x,y,w,h) in faces:
-
-            cv2.rectangle(img, (x,y), (x+w,y+h), (255,0,0), 2)     
-            count += 1
-            print(count)
-            # Save the captured image into the datasets folder
-            cv2.imwrite("dataset/User." + str(face_id) + '.' + str(count) + ".jpg", gray[y:y+h,x:x+w])
-
-            cv2.imshow('image', img)
-
-        k = cv2.waitKey(100) & 0xff # Press 'ESC' for exiting video
-        if k == 27:
-            break
-        elif count >= 30: # Take 30 face sample and stop video
-            break
-
     # Do a bit of cleanup
     print("\n [INFO] Exiting Program and cleanup stuff")
-    cam.release()
     cv2.destroyAllWindows()
+    vs.stop()
 
 # Button defination
 bold_font = tkfont.Font(family="Helvetica", size=12, weight="bold")
