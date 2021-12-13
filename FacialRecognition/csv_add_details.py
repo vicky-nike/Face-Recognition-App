@@ -23,7 +23,7 @@ def create(name):
                 
         # data rows of csv file
         rows = [ ['0','None']]
-        filename = "university_records.csv"
+        filename = "records.csv"
         ID = 1
         # writing to csv file
         with open(filename, 'w') as csvfile:
@@ -36,7 +36,7 @@ def create(name):
                 # writing the data rows
                 csvwriter.writerows(rows)
         list_data=[ID,name]
-        with open('university_records.csv', 'a', newline='') as f_object:
+        with open('records.csv', 'a', newline='') as f_object:
             writer_object = writer(f_object)
             writer_object.writerow(list_data)  
             f_object.close()

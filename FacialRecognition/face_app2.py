@@ -61,6 +61,7 @@ def enrollNew():
     # labels
     bgTopLabel = Label(root, text="", bg='#dae8fc', font=bold_font, height=3, width=44, borderwidth=1, relief="solid")
     topLabelText = Label(root, text="Enroll New", bg='#dae8fc', fg = "black", font=bold_font,justify=LEFT, height=2, width=10)
+    global boxLabel
     boxLabel = Label(root, text="", bg='#dae8fc',font=bold_font, height=15, width=30)
     NameLabel = Label(root, text="Name", font=bold_font,justify=CENTER, height=1, width=10)
     global NameEntry
@@ -69,7 +70,7 @@ def enrollNew():
     global msgLabel
     msgLabel = Label(root, text=' Enter name and click start', font=normal_font, anchor=NW, height=1, width=8, borderwidth=1, relief=SUNKEN)
     global StartButton
-    StartButton = Button(root, text='Start', bg='white', fg='black', font=bold_font, height=1, width=10, command=TenrollNewStart)
+    StartButton = Button(root, text='Start', bg='white', fg='black', font=bold_font, height=1, width=10, command=getName)
 
     #place labels
     bgTopLabel.place(anchor=W, relheight=0.15, relwidth=0.686, relx=0.295, rely=0.1)
@@ -157,6 +158,7 @@ def makeDataset():
     settingsButton['state'] = NORMAL
 
 def dataset(face_id, part, count):
+    global boxLabel
     vs = WebcamVideoStream(src=0).start()
     face_detector = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
     
@@ -164,7 +166,16 @@ def dataset(face_id, part, count):
 
         frame = vs.read()
         frame = imutils.resize(frame, width=400)
+        frame1 = imutils.resize(frame, width = 700)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        # Get the latest frame and convert into Image
+        cv2image= cv2.cvtColor(frame1, cv2.COLOR_BGR2RGB)
+        dis_img = Image.fromarray(cv2image)
+        # Convert image to PhotoImage
+        imgtk = ImageTk.PhotoImage(image = dis_img)
+        boxLabel.imgtk = imgtk
+        boxLabel.configure(image=imgtk)
+
         faces = face_detector.detectMultiScale(gray, 1.3, 5)
 
         for (x,y,w,h) in faces: 
@@ -174,12 +185,8 @@ def dataset(face_id, part, count):
             count += 1
             print(count)
             cv2.imwrite("dataset/User." + str(face_id) + '.' + str(count) + ".jpg", gray[y:y+h,x:x+w])
-            cv2.imshow('camera', frame)
 
-        k = cv2.waitKey(100) & 0xff # Press 'ESC' for exiting video
-        if k == 27:
-            break
-        elif count == 10 and part == 1: # Take 10 face sample and stop video
+        if count == 10 and part == 1: # Take 10 face sample and stop video
             break
         elif count == 20 and part == 2:
             break
