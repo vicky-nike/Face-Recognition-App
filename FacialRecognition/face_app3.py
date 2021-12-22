@@ -1,3 +1,4 @@
+import threading
 from tkinter import *
 from PIL import ImageTk, Image
 from tkinter import messagebox
@@ -13,13 +14,23 @@ import imutils
 from threading import Thread
 import csv_add_details
 import face_training
+import dbus
 
+sess_bus = dbus.SessionBus()
 root = Tk()
 root.title('Face detection app')
 root.tk.call('wm', 'iconphoto', root._w, PhotoImage(file='face-id.png'))
-root.attributes("-fullscreen", True)
-root.bind('<Escape>', lambda event: root.state('normal'))
-
+#root.attributes("-fullscreen", True)
+root.attributes("-zoomed", True)
+#root.geometry("700x400")
+#root.bind('<Escape>', lambda event: root.state('normal'))
+'''
+#getting screen width and height of display
+width= root.winfo_screenwidth() 
+height= root.winfo_screenheight()
+#setting tkinter window size
+root.geometry("%dx%d" % (width, height))
+'''
 #tab functions
 def home():
     #Button color change
@@ -48,6 +59,7 @@ def home():
     StartButton.place(anchor=W, relheight=0.1, relwidth=0.215, relx=0.77, rely=0.92)
 
 def enrollNew():
+
     #Button color change
     global homeButton, enrollNewButton, editDatabaseButton, settingsButton
     homeButton.configure(bg="white", fg='#4d3ce6')
@@ -60,12 +72,14 @@ def enrollNew():
     normal_font = tkfont.Font(family="Helvetica", size=12, slant='italic')
     # labels
     bgTopLabel = Label(root, text="", bg='#dae8fc', font=bold_font, height=3, width=44, borderwidth=1, relief="solid")
-    topLabelText = Label(root, text="Enroll New", bg='#dae8fc', fg = "black", font=bold_font, justify=LEFT, height=2, width=10)
+    topLabelText = Label(root, text="Enroll New", bg='#dae8fc', fg = "black", font=bold_font,justify=LEFT, height=2, width=10)
     global boxLabel
     boxLabel = Label(root, text="", bg='#dae8fc',font=bold_font, height=15, width=30)
     NameLabel = Label(root, text="Name", font=bold_font,justify=CENTER, height=1, width=10)
     global NameEntry
     NameEntry = Entry(root, borderwidth=1, bg = "#dae8fc", fg= "black", font=bold_font, width=17)
+    NameEntry.bind('<FocusIn>', keyboardShow)
+    EnterButton = Button(root, text='Enter', bg='white', fg='black', font=bold_font, height=1, width=10, command=lambda: [rootFocus(), keyboardHide()])
     msgTitleLabel = Label(root, text="Message box",anchor=CENTER, font=bold_font, height=1, width=8)
     global msgLabel
     msgLabel = Label(root, text=' Enter name and click start', font=normal_font, anchor=NW, height=1, width=8, borderwidth=1, relief=SUNKEN)
@@ -77,9 +91,10 @@ def enrollNew():
     topLabelText.place(anchor=W, relheight=0.1, relwidth=0.2, relx=0.31, rely=0.1)
     boxLabel.place(anchor=W, relheight=0.75, relwidth=0.46, relx=0.295, rely=0.6)
     NameLabel.place(anchor=W, relheight=0.1, relwidth=0.215, relx=0.77, rely=0.26)
-    NameEntry.place(anchor=W, relheight=0.1, relwidth=0.215, relx=0.77, rely=0.37)
-    msgTitleLabel.place(anchor=W, relheight=0.1, relwidth=0.2, relx= 0.77, rely=0.5)
-    msgLabel.place(anchor=W, relheight=0.1, relwidth=0.2, relx=0.77, rely=0.6)
+    NameEntry.place(anchor=W, relheight=0.06, relwidth=0.215, relx=0.77, rely=0.37)
+    EnterButton.place(anchor = W, relheight=0.06, relwidth=0.215, relx=0.77, rely=0.45)
+    msgTitleLabel.place(anchor=W, relheight=0.1, relwidth=0.2, relx= 0.77, rely=0.6)
+    msgLabel.place(anchor=W, relheight=0.1, relwidth=0.2, relx=0.77, rely=0.7)
     StartButton.place(anchor=W, relheight=0.1, relwidth=0.215, relx=0.77, rely=0.92)
 
 def editDatabase():
@@ -98,6 +113,7 @@ def editDatabase():
     boxLabel = Label(root, text="", bg='#dae8fc',font=bold_font, height=15, width=30)
     NameLabel = Label(root, text="Name", font=bold_font,justify=CENTER, height=1, width=10)
     NameEntry = Entry(root, borderwidth=1, bg = "#dae8fc", fg= "black", font=bold_font, width=17)
+    NameEntry.bind('<FocusIn>', keyboardShow)
     StartButton = Button(root, text='Start', bg='white', fg='black', font=bold_font, height=1, width=10)
 
     #place labels
@@ -160,16 +176,18 @@ def makeDataset():
 def dataset(face_id, part, count):
     global boxLabel
     vs = WebcamVideoStream(src=0).start()
+    #face_detector = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
     face_detector = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
     
     while(True):
 
         frame = vs.read()
         frame = imutils.resize(frame, width=400)
-        frame1 = imutils.resize(frame, width = 700)
+        #frame1 = imutils.resize(frame, width = 700)
+        frame = cv2.flip(frame, -1)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         # Get the latest frame and convert into Image
-        cv2image= cv2.cvtColor(frame1, cv2.COLOR_BGR2RGB)
+        cv2image= cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         dis_img = Image.fromarray(cv2image)
         # Convert image to PhotoImage
         imgtk = ImageTk.PhotoImage(image = dis_img)
@@ -198,6 +216,72 @@ def dataset(face_id, part, count):
     cv2.destroyAllWindows()
     vs.stop()
 
+def dataset1(face_id, part, count):
+    cam = cv2.VideoCapture(0)
+    cam.set(3, 640) # set video width
+    cam.set(4, 480) # set video height
+    #face_detector = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+    face_detector = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+    print("\n [INFO] Initializing face capture. Look the camera and wait ...")
+
+    while(True):
+
+        ret, img = cam.read()
+        img1 = cv2.flip(img, -1)
+        
+        #t1.join()
+        gray = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
+
+        faces = face_detector.detectMultiScale(gray)
+
+        for (x, y, w, h) in faces: 
+
+            cv2.rectangle(img, (x,y), (x+w,y+h), (255,0,0), 2)
+            t1 = threading.Thread(target=viewCamera, args=(img1, ))
+            t1.start()
+            # Save the captured image into the datasets folder
+            count += 1
+            cv2.imwrite("dataset/User." + str(face_id) + '.' + str(count) + ".jpg", gray[y:y+h,x:x+w])
+            #cv2.imshow('camera', img)
+            print(count)
+
+        #t1.join()    
+        if count == 10 and part == 1: # Take 10 face sample and stop video
+            break
+        elif count == 20 and part == 2:
+            break
+        elif count >= 30:
+            break
+
+    # Do a bit of cleanup
+    print("\n [INFO] Exiting Program and cleanup stuff")
+    cam.release()
+    cv2.destroyAllWindows()
+
+def viewCamera(img):
+    global boxLabel
+    cv2image= cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    dis_img = Image.fromarray(cv2image)
+    imgtk = ImageTk.PhotoImage(image = dis_img)
+    boxLabel.imgtk = imgtk
+    boxLabel.configure(image=imgtk)
+    return 0
+
+def keyboardShow(event):
+    kbd.Show()
+    #root.lower()
+
+def keyboardHide():
+    kbd.Hide()
+
+def rootFocus():
+    root.focus()
+
+#Start ONboard
+kbd = sess_bus.get_object('org.onboard.Onboard', '/org/onboard/Onboard/Keyboard')
+#root.attributes("-fullscreen", True)
+#root.attributes("-type", "splash")
+#root.bind_class("Entry", "<1>", lambda ev: ev.widget.focus_force())
 #BG labels
 labelLeft = Label(root, text="", bg="#6963ff", height= 60, width=25)
 image = Image.open('logo-main.png')
