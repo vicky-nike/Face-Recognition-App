@@ -121,7 +121,7 @@ def editDatabase():
     topLabelText.place(anchor=W, relheight=0.1, relwidth=0.2, relx=0.31, rely=0.1)
     boxLabel.place(anchor=W, relheight=0.75, relwidth=0.46, relx=0.295, rely=0.6)
     NameLabel.place(anchor=W, relheight=0.1, relwidth=0.215, relx=0.77, rely=0.26)
-    NameEntry.place(anchor=W, relheight=0.1, relwidth=0.215, relx=0.77, rely=0.37)
+    NameEntry.place(anchor=W, relheight=0.06, relwidth=0.215, relx=0.77, rely=0.37)
     StartButton.place(anchor=W, relheight=0.1, relwidth=0.215, relx=0.77, rely=0.92)
 
 def settings():
