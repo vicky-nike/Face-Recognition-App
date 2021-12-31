@@ -156,10 +156,10 @@ def makeDataset():
     messagebox.showinfo("Attention", "Initializing face capture. Look at the camera and wait ...")
     msgLabelNew['text'] = "  Preparing dataset"
     global id
-    #vs = WebcamVideoStream(src=0).start()
-    cam = cv2.VideoCapture(0)
-    cam.set(3, 640) # set video widht
-    cam.set(4, 480) # set video height
+    vs = WebcamVideoStream(src=0).start()
+    #cam = cv2.VideoCapture(0)
+    #cam.set(3, 640) # set video widht
+    #cam.set(4, 480) # set video height
     face_detector = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
     count = 0
@@ -168,8 +168,8 @@ def makeDataset():
         global boxLabel
         global msgLabelNew
 
-        frame= cv2.cvtColor(cam.read()[1],cv2.COLOR_BGR2RGB)
-        #frame= cv2.cvtColor(vs.read(),cv2.COLOR_BGR2RGB)
+        #frame= cv2.cvtColor(cam.read()[1],cv2.COLOR_BGR2RGB)
+        frame= cv2.cvtColor(vs.read(),cv2.COLOR_BGR2RGB)
         frame = cv2.flip(frame, -1)
         img1 = Image.fromarray(frame)
         # Convert image to PhotoImage
@@ -201,7 +201,7 @@ def makeDataset():
             count += 1
             boxLabel.after(20, lambda: dataset(face_id, count))
         elif count >= 30:
-            msgLabelNew['text'] = "Preparing dataset completed"
+            #msgLabelNew['text'] = "Preparing dataset completed"
             face_training.trainStart()
             msgLabelNew['text'] = "Your face details got saved\nand trained "
             StartButton['state'] = NORMAL
@@ -230,14 +230,17 @@ def recognition():
     names = data['Name'].tolist()
 
     # Initialize and start realtime video capture
-    cam = cv2.VideoCapture(0)
-    cam.set(3, 640) # set video widht
-    cam.set(4, 480) # set video height
-    #vs = WebcamVideoStream(src=0).start()
+    #cam = cv2.VideoCapture(0)
+    #cam.set(3, 640) # set video widht
+    #cam.set(4, 480) # set video height
+    vs = WebcamVideoStream(src=0).start()
+    # Define min window size to be recognized as a face
+    #minW = 0.1*cam.get(3)
+    #minH = 0.1*cam.get(4)
     
     def recognition_display():
-        img= cv2.cvtColor(cam.read()[1],cv2.COLOR_BGR2RGB)
-        #img= cv2.cvtColor(vs.read(),cv2.COLOR_BGR2RGB)
+        #img= cv2.cvtColor(cam.read()[1],cv2.COLOR_BGR2RGB)
+        img= cv2.cvtColor(vs.read(),cv2.COLOR_BGR2RGB)
         img = cv2.flip(img, -1)
         img1 = Image.fromarray(img)
         # Convert image to PhotoImage
