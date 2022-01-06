@@ -358,7 +358,7 @@ def display(event):
             num5.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.33, rely=0.11)
 
             num6 = ttk.Button(key, text='^', command=lambda: press('^'))
-            num6.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.395, rely=0.1)
+            num6.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.395, rely=0.11)
 
             num7 = ttk.Button(key, text='&', command=lambda: press('&'))
             num7.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.46, rely=0.11)
@@ -461,7 +461,7 @@ def display(event):
             quotation.place(anchor='w', relheight=0.175, relwidth=0.095, relx=0.78, rely=0.50)
 
             enter = ttk.Button(key, text='Enter', command=lambda: press('\n'))
-            enter.place(anchor='w', relheight=0.429, relwidth=0.112, relx=0.88, rely=0.695)
+            enter.place(anchor='w', relheight=0.558, relwidth=0.112, relx=0.88, rely=0.695)
 
             # Fourth line Buttons #########################################################
 
