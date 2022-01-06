@@ -1,4 +1,3 @@
-import pandas as pd
 from datetime import datetime, date
 import csv
 import os
@@ -13,9 +12,6 @@ def got(name):
     #print("\ndate", today)
 
     if os.path.isfile('history.csv'):
-        results = pd.read_csv('history.csv')
-        length = len(results)
-        print("length", length)
         data = [today,time,name]
         with open('history.csv', 'a+', newline='\n') as f:
             writer_obj = writer(f, lineterminator="\n")
