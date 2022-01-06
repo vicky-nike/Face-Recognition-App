@@ -8,6 +8,7 @@ import os
 import pandas as pd
 import csv_add_details
 import face_training
+import recognised_record
 from tkinter import ttk
 
 root = Tk()
@@ -172,7 +173,7 @@ def makeDataset():
             os.makedirs('dataset')
 
         frame= cv2.cvtColor(cam.read()[1],cv2.COLOR_BGR2RGB)
-        frame = cv2.flip(frame, -1)
+        #frame = cv2.flip(frame, -1)
         img1 = Image.fromarray(frame)
         # Convert image to PhotoImage
         imgtk = ImageTk.PhotoImage(image = img1)
@@ -241,7 +242,7 @@ def recognition():
     def recognition_display():
         msgLabelHome['text'] = " Recognition started "
         img= cv2.cvtColor(cam.read()[1],cv2.COLOR_BGR2RGB)
-        img = cv2.flip(img, -1)
+        #img = cv2.flip(img, -1)
         img1 = Image.fromarray(img)
         # Convert image to PhotoImage
         imgtk = ImageTk.PhotoImage(image = img1)
@@ -266,6 +267,7 @@ def recognition():
             found = str(names[id])
             if(conf>20):
                 msgLabelHome['text'] = "Recognised as " + found
+                recognised_record.got(found)
                 break
         
         #cv2.imshow('camera',img)
