@@ -156,7 +156,7 @@ def makeDataset():
     messagebox.showinfo("Attention", "Initializing face capture. Look at the camera and wait ...")
     msgLabelNew['text'] = "  Preparing dataset"
     global id
-    #vs = WebcamVideoStream(src=0).start()
+
     cam = cv2.VideoCapture(0)
     cam.set(3, 640) # set video widht
     cam.set(4, 480) # set video height
@@ -167,9 +167,11 @@ def makeDataset():
     def dataset(face_id, count):
         global boxLabel
         global msgLabelNew
+        
+        if not os.path.exists('dataset'):
+            os.makedirs('dataset')
 
         frame= cv2.cvtColor(cam.read()[1],cv2.COLOR_BGR2RGB)
-        #frame= cv2.cvtColor(vs.read(),cv2.COLOR_BGR2RGB)
         frame = cv2.flip(frame, -1)
         img1 = Image.fromarray(frame)
         # Convert image to PhotoImage
@@ -235,12 +237,10 @@ def recognition():
     cam = cv2.VideoCapture(0)
     cam.set(3, 640) # set video widht
     cam.set(4, 480) # set video height
-    #vs = WebcamVideoStream(src=0).start()
     
     def recognition_display():
         msgLabelHome['text'] = " Recognition started "
         img= cv2.cvtColor(cam.read()[1],cv2.COLOR_BGR2RGB)
-        #img= cv2.cvtColor(vs.read(),cv2.COLOR_BGR2RGB)
         img = cv2.flip(img, -1)
         img1 = Image.fromarray(img)
         # Convert image to PhotoImage
@@ -295,7 +295,6 @@ def display_keyboard():
     positionRight = int(root.winfo_screenwidth()/2 - 600/2)
     positionDown = int(root.winfo_screenheight()/2 - 200/2)
     
-    #key.geometry('600x200')
     key.geometry("{}x{}+{}+{}".format(600, 200, positionRight, (positionDown+150)))
     style = ttk.Style()
     key.configure(bg='gray27')
