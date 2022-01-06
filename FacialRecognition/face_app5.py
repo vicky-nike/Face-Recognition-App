@@ -17,6 +17,7 @@ root.title('Face detection app')
 root.tk.call('wm', 'iconphoto', root._w, PhotoImage(file='face-id.png'))
 #root.attributes("-fullscreen", True)
 root.attributes("-zoomed", True)
+key = None
 
 #tab functions
 def home():
@@ -74,8 +75,8 @@ def enrollNew():
     NameLabel = Label(root, text="Name", font=bold_font,justify=CENTER, height=1, width=10)
     global NameEntry
     NameEntry = Entry(root, borderwidth=1, bg = "#dae8fc", fg= "black", font=bold_font, width=17)
-    NameEntry.bind('<Button-1>', display)
-    EnterButton = Button(root, text='Enter', bg='white', fg='black', font=bold_font, height=1, width=10, command=lambda: [rootFocus(), key.destroy])
+    NameEntry.bind('<Button-1>', check_keyboard)
+    EnterButton = Button(root, text='Enter', bg='white', fg='black', font=bold_font, height=1, width=10, command=lambda: [rootFocus(), key.destroy()])
     msgTitleLabel = Label(root, text="Message box",anchor=CENTER, font=bold_font, height=1, width=8)
     global msgLabelNew
     msgLabelNew = Label(root, text=' Enter name and click start', font=normal_font, anchor=NW, height=1, width=8, borderwidth=1, relief=SUNKEN)
@@ -109,7 +110,7 @@ def editDatabase():
     boxLabel = Label(root, text="", bg='#dae8fc',font=bold_font, height=15, width=30)
     NameLabel = Label(root, text="Name", font=bold_font,justify=CENTER, height=1, width=10)
     NameEntry = Entry(root, borderwidth=1, bg = "#dae8fc", fg= "black", font=bold_font, width=17)
-    NameEntry.bind('<Button-1>', display)
+    NameEntry.bind('<Button-1>', check_keyboard)
     StartButton = Button(root, text='Start', bg='white', fg='black', font=bold_font, height=1, width=10)
 
     #place labels
@@ -279,7 +280,16 @@ def recognition():
             boxLabelHome.after(20, recognition_display)
     recognition_display()
 
-def display(event):
+def check_keyboard(event):
+    if key is None:
+        display_keyboard()
+    try:
+        #print("keyboard is already opended")
+        key.lift()
+    except TclError:
+        display_keyboard()
+
+def display_keyboard():
     global key
     key = Toplevel(root)
     key.title('On Screen Keyboard')
