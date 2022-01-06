@@ -5,8 +5,6 @@ import tkinter.font as tkfont
 import cv2
 from time import sleep
 import os
-from imutils.video import WebcamVideoStream
-import imutils
 import pandas as pd
 import csv_add_details
 import face_training
