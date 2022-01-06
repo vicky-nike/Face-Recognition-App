@@ -55,6 +55,7 @@ def home():
     msgLabelHome.place(anchor=W, relheight=0.1, relwidth=0.2, relx=0.77, rely=0.7)
 
 def enrollNew():
+
     #Button color change
     global homeButton, enrollNewButton, editDatabaseButton, settingsButton
     homeButton.configure(bg="white", fg='#4d3ce6')
@@ -201,6 +202,8 @@ def makeDataset():
             count += 1
             boxLabel.after(20, lambda: dataset(face_id, count))
         elif count >= 30:
+            cam.release()
+            cv2.destroyAllWindows()
             msgLabelNew['text'] = "Preparing dataset completed"
             face_training.trainStart()
             msgLabelNew['text'] = "Your face details got saved\nand trained "
@@ -236,6 +239,7 @@ def recognition():
     #vs = WebcamVideoStream(src=0).start()
     
     def recognition_display():
+        msgLabelHome['text'] = " Recognition started "
         img= cv2.cvtColor(cam.read()[1],cv2.COLOR_BGR2RGB)
         #img= cv2.cvtColor(vs.read(),cv2.COLOR_BGR2RGB)
         img = cv2.flip(img, -1)
@@ -257,6 +261,7 @@ def recognition():
 
             cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,0), 2)
             id, confidence = recognizer.predict(gray[y:y+h,x:x+w])
+            print("confidence: ", confidence)
             conf = round(100 - confidence)
             print("id", id, " conf", conf)
             found = str(names[id])
@@ -267,6 +272,8 @@ def recognition():
         #cv2.imshow('camera',img)
         k = cv2.waitKey(10) & 0xff # Press 'ESC' for exiting video
         if(conf>20):
+            cam.release()
+            cv2.destroyAllWindows()
             return
         if(count==1):
             boxLabelHome.after(20, recognition_display)
@@ -333,87 +340,87 @@ def display(event):
             # Adding keys line wise
             # First Line Button
             tilda = ttk.Button(key, text='~', command=lambda: press('~'))
-            tilda.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.005, rely=0.29)
+            tilda.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.005, rely=0.11)
 
             num1 = ttk.Button(key, text='!', command=lambda: press('!'))
-            num1.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.07, rely=0.29)
+            num1.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.07, rely=0.11)
             
             num2 = ttk.Button(key, text='@', command=lambda: press('@'))
-            num2.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.135, rely=0.29)
+            num2.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.135, rely=0.11)
 
             num3 = ttk.Button(key, text='#', command=lambda: press('#'))
-            num3.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.2, rely=0.29)
+            num3.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.2, rely=0.11)
 
             num4 = ttk.Button(key, text='$', command=lambda: press('$'))
-            num4.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.265, rely=0.29)
+            num4.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.265, rely=0.11)
 
             num5 = ttk.Button(key, text='%', command=lambda: press('%'))
-            num5.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.33, rely=0.29)
+            num5.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.33, rely=0.11)
 
             num6 = ttk.Button(key, text='^', command=lambda: press('^'))
-            num6.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.395, rely=0.29)
+            num6.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.395, rely=0.1)
 
             num7 = ttk.Button(key, text='&', command=lambda: press('&'))
-            num7.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.46, rely=0.29)
+            num7.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.46, rely=0.11)
 
             num8 = ttk.Button(key, text='*', command=lambda: press('*'))
-            num8.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.525, rely=0.29)
+            num8.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.525, rely=0.11)
 
             num9 = ttk.Button(key, text='(', command=lambda: press('('))
-            num9.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.59, rely=0.29)
+            num9.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.59, rely=0.11)
 
             num0 = ttk.Button(key, text=')', command=lambda: press(')'))
-            num0.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.655, rely=0.29)
+            num0.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.655, rely=0.11)
 
             under = ttk.Button(key, text='_', command=lambda: press('_'))
-            under.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.72, rely=0.29)
+            under.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.72, rely=0.11)
 
             equal = ttk.Button(key, text='=', command=lambda: press('='))
-            equal.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.785, rely=0.29)
+            equal.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.785, rely=0.11)
 
             backspace = ttk.Button(key, text='Backspace', command=Backspace)
-            backspace.place(anchor='w', relheight=0.175, relwidth=0.141, relx=0.85, rely=0.29)
+            backspace.place(anchor='w', relheight=0.175, relwidth=0.141, relx=0.85, rely=0.11)
 
             # Second Line Buttons #########################################################
 
             tab_button = ttk.Button(key, text='Tab', command=lambda: press('\t'))
-            tab_button.place(anchor='w', relheight=0.175, relwidth=0.09, relx=0.005, rely=0.45)
+            tab_button.place(anchor='w', relheight=0.175, relwidth=0.09, relx=0.005, rely=0.305)
 
             Q = ttk.Button(key, text='Q', command=lambda: press('Q'))
-            Q.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.1, rely=0.45)
+            Q.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.1, rely=0.305)
 
             W = ttk.Button(key, text='W', command=lambda: press('W'))
-            W.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.165, rely=0.45)
+            W.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.165, rely=0.305)
 
             E = ttk.Button(key, text='E', command=lambda: press('E'))
-            E.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.23, rely=0.45)
+            E.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.23, rely=0.305)
 
             R = ttk.Button(key, text='R', command=lambda: press('R'))
-            R.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.295, rely=0.45)
+            R.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.295, rely=0.305)
 
             T = ttk.Button(key, text='T', command=lambda: press('T'))
-            T.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.36, rely=0.45)
+            T.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.36, rely=0.305)
 
             Y = ttk.Button(key, text='Y', command=lambda: press('Y'))
-            Y.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.425, rely=0.45)
+            Y.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.425, rely=0.305)
 
             U = ttk.Button(key, text='U', command=lambda: press('U'))
-            U.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.49, rely=0.45)
+            U.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.49, rely=0.305)
 
             I = ttk.Button(key, text='I', command=lambda: press('I'))
-            I.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.555, rely=0.45)
+            I.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.555, rely=0.305)
 
             O = ttk.Button(key, text='O', command=lambda: press('O'))
-            O.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.62, rely=0.45)
+            O.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.62, rely=0.305)
 
             P = ttk.Button(key, text='P', command=lambda: press('P'))
-            P.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.685, rely=0.45)
+            P.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.685, rely=0.305)
 
             curly_l = ttk.Button(key, text='{', command=lambda: press('{'))
-            curly_l.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.75, rely=0.45)
+            curly_l.place(anchor='w', relheight=0.175, relwidth=0.06, relx=0.75, rely=0.305)
 
             curly_r = ttk.Button(key, text='}', command=lambda: press('}'))
-            curly_r.place(anchor='w', relheight=0.175, relwidth=0.11, relx=0.88, rely=0.45)
+            curly_r.place(anchor='w', relheight=0.175, relwidth=0.11, relx=0.88, rely=0.305)
 
             # Third Line Buttons ##########################################################
 
@@ -454,7 +461,7 @@ def display(event):
             quotation.place(anchor='w', relheight=0.175, relwidth=0.095, relx=0.78, rely=0.50)
 
             enter = ttk.Button(key, text='Enter', command=lambda: press('\n'))
-            enter.place(anchor='w', relheight=0.429, relwidth=0.112, relx=0.88, rely=0.759)
+            enter.place(anchor='w', relheight=0.429, relwidth=0.112, relx=0.88, rely=0.695)
 
             # Fourth line Buttons #########################################################
 
