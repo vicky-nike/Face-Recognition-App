@@ -43,7 +43,7 @@ def trainStart():
 
     recognizer = cv2.face.LBPHFaceRecognizer_create()
     global detector
-    detector = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+    detector = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
     print ("\n [INFO] Training faces. It will take a few seconds. Wait ...")
     faces,ids = getImagesAndLabels(path)

@@ -165,7 +165,7 @@ def makeDataset():
 
     count = 0
 
-    def dataset(face_id, count):
+    def makeDataset_display(face_id, count):
         global boxLabel
         global msgLabelNew
         
@@ -198,11 +198,11 @@ def makeDataset():
         if count == 10: # Take 10 face sample and stop video
             messagebox.showinfo("Attention","Now turn your head 30 degrees left")
             count += 1
-            boxLabel.after(20, lambda: dataset(face_id, count))
+            boxLabel.after(20, lambda: makeDataset_display(face_id, count))
         elif count == 20:
             messagebox.showinfo("Attention","Now turn your head 30 degrees right")
             count += 1
-            boxLabel.after(20, lambda: dataset(face_id, count))
+            boxLabel.after(20, lambda: makeDataset_display(face_id, count))
         elif count >= 30:
             cam.release()
             cv2.destroyAllWindows()
@@ -216,9 +216,9 @@ def makeDataset():
             settingsButton['state'] = NORMAL
             return
         else:
-            boxLabel.after(20, lambda: dataset(face_id, count))
+            boxLabel.after(20, lambda: makeDataset_display(face_id, count))
     
-    dataset(id, count)
+    makeDataset_display(id, count)
 
 def recognition():
     global msgLabelHome
