@@ -14,8 +14,9 @@ from tkinter import ttk
 root = Tk()
 root.title('Face detection app')
 root.tk.call('wm', 'iconphoto', root._w, PhotoImage(file='face-id.png'))
-#root.attributes("-fullscreen", True)
-root.attributes("-zoomed", True)
+root.attributes("-fullscreen", True)
+root.attributes('-topmost', False)
+#root.attributes("-zoomed", True)
 key = None
 
 #tab functions
@@ -281,11 +282,11 @@ def recognition():
     cam = cv2.VideoCapture(0)
     cam.set(3, 640) # set video widht
     cam.set(4, 480) # set video height
-    
+
     def recognition_display():
         msgLabelHome['text'] = " Recognition started "
         img= cv2.cvtColor(cam.read()[1],cv2.COLOR_BGR2RGB)
-        img = cv2.flip(img, -1)
+        #img = cv2.flip(img, -1)
         img1 = Image.fromarray(img)
         # Convert image to PhotoImage
         imgtk = ImageTk.PhotoImage(image = img1)
@@ -321,14 +322,18 @@ def recognition():
             return
         if(count==1):
             boxLabelHome.after(20, recognition_display)
-    recognition_display()
+
+    if(len(names) <= 1):
+        messagebox.showinfo("Attention", "Please add entry to start recognition.")
+    else:
+        recognition_display()
 
 def check_keyboard(event):
     if key is None:
         display_keyboard()
     try:
-        #print("keyboard is already opended")
-        key.lift()
+        key.destroy()
+        display_keyboard()
     except TclError:
         display_keyboard()
 
