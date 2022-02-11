@@ -105,7 +105,7 @@ def editDatabase():
     # labels
     global boxLabel, NameEntry, msgLabel, StartButton
     bgTopLabel = Label(root, text="", bg='#dae8fc', font=bold_font, height=3, width=44, borderwidth=1, relief="solid")
-    topLabelText = Label(root, text="Enroll New", bg='#dae8fc', fg = "black", font=bold_font,justify=LEFT, height=2, width=10)
+    topLabelText = Label(root, text="Edit Database", bg='#dae8fc', fg = "black", font=bold_font,justify=LEFT, height=2, width=10)
     boxLabel = Label(root, text="", bg='#dae8fc',font=bold_font, height=15, width=30)
     NameLabel = Label(root, text="Name", font=bold_font,justify=CENTER, height=1, width=10)
     NameEntry = Entry(root, borderwidth=1, bg = "#dae8fc", fg= "black", font=bold_font, width=17)
