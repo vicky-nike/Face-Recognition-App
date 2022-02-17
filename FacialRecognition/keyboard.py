@@ -11,10 +11,9 @@ key.geometry('600x200')  # Window size
 #key.minsize(width=700, height=240)
 
 style = ttk.Style()
-key.configure(bg='gray27')
-style.configure('TButton', background='gray21')
-style.configure('TButton', foreground='white')
-style.map('TButton', foreground=[('active', 'black')])
+#style.theme_use("clam")
+key.configure(background='gray27')
+style.map("C.TButton", foreground=[('!active', 'white'), ('active', 'white')], background=[ ('!active','grey21'), ('active', 'black')])
 #cursor = ttk.Cursor()
 #cursor.config
 
@@ -56,15 +55,11 @@ def Theme():
     global theme
     if theme == "dark":
         key.configure(bg='gray27')
-        style.configure('TButton', background='gray21')
-        style.configure('TButton', foreground='white')
-        style.map('TButton', foreground=[('active', 'black')])
+        style.map("C.TButton", foreground=[('!active', 'white'), ('active', 'white')], background=[('!active','gray21'), ('active', 'black')])
         theme = "light"
     elif theme == "light":
         key.configure(bg='gray99')
-        style.configure('TButton', background='azure')
-        style.configure('TButton', foreground='black', cursor='man')
-        style.map('TButton', foreground=[('active', 'white')], background=[('active', 'grey')])
+        style.map("C.TButton", foreground=[('!active', 'black'), ('active', 'black')], background=[('!active','azure'), ('active', 'grey')])
         theme = "dark"
 
 def display():
